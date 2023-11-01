@@ -13,6 +13,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// SignUp             godoc
+// @Summary      Sign Up 
+// @Description  Create user using username and password
+// @Tags         auth
+// @Produce      json
+// @Success      200  
+// @Router       /sign-up [post]
 func SignUp(c *gin.Context) {
 	var body struct {
 		Username string
@@ -48,6 +55,13 @@ func SignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{})
 }
 
+// Login             godoc
+// @Summary      Login 
+// @Description  Generate JWT for authentication
+// @Tags         auth
+// @Produce      json
+// @Success      200
+// @Router       /login [post]
 func Login(c *gin.Context) {
 	var body struct {
 		Username string
@@ -89,5 +103,19 @@ func Login(c *gin.Context) {
 		return
 	}
 	
+	c.SetSameSite(http.SameSiteLaxMode)
+	c.SetCookie("Auth", tokenString, 3600 * 24 * 30, "", "", false, true)
+
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+}
+
+// Validate             godoc
+// @Summary      Validate 
+// @Description  Validate authentication
+// @Tags         auth
+// @Produce      json
+// @Success      200
+// @Router       /validate [get]
+func Validate(c *gin.Context){
+	c.JSON(http.StatusOK, gin.H{"message": "User is logged in"})
 }
