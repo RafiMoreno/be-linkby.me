@@ -43,6 +43,7 @@ func SignUp(c *gin.Context) {
 	user := models.User{
 		Username: body.Username,
 		Password: string(hashed_pw),
+		Profile: models.Profile{DisplayName: body.Username},
 	}
 	result := initializers.DB.Create(&user)
 
@@ -52,7 +53,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{})
+	c.JSON(http.StatusOK, gin.H{"message" : "Successfully created user"})
 }
 
 // Login             godoc
