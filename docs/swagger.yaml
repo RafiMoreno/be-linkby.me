@@ -12,6 +12,17 @@ paths:
       summary: Login
       tags:
       - auth
+  /profile/:id:
+    get:
+      description: Get a user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get Profile
+      tags:
+      - profile
   /sign-up:
     post:
       description: Create user using username and password

@@ -32,6 +32,23 @@ const docTemplate = `{
                 }
             }
         },
+        "/profile/:id": {
+            "get": {
+                "description": "Get a user profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Get Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/sign-up": {
             "post": {
                 "description": "Create user using username and password",

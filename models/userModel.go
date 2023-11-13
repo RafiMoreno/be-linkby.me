@@ -4,7 +4,7 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	Username string `gorm:"unique"`
-	Password string
+	Username string `json:"username" gorm:"unique"`
+	Password string `json:"password"`
 	Profile Profile `gorm:"foreignKey:ID"`
 }

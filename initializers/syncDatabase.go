@@ -1,7 +1,7 @@
 package initializers
 
 import (
-	"example/be-linkby.me/models"
+	"github.com/RafiMoreno/be-linkby.me/models"
 )
 
 func SyncDatabase() {

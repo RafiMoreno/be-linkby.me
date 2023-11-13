@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"example/be-linkby.me/initializers"
-	"example/be-linkby.me/models"
+	"github.com/RafiMoreno/be-linkby.me/initializers"
+	"github.com/RafiMoreno/be-linkby.me/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
