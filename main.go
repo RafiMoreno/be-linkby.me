@@ -27,6 +27,7 @@ func main() {
 	v1.POST("/login", controllers.Login)
 	v1.GET("/validate", middleware.RequireAuth, controllers.Validate)
 	v1.GET("/profile/:username", controllers.GetProfile)
+	v1.PUT("/profile/:username", controllers.EditProfile)
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	r.Run()
