@@ -1,0 +1,48 @@
+info:
+  contact: {}
+paths:
+  /login:
+    post:
+      description: Generate JWT for authentication
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Login
+      tags:
+      - auth
+  /profile/:id:
+    get:
+      description: Get a user profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Get Profile
+      tags:
+      - profile
+  /sign-up:
+    post:
+      description: Create user using username and password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Sign Up
+      tags:
+      - auth
+  /validate:
+    get:
+      description: Validate authentication
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Validate
+      tags:
+      - auth
+swagger: "2.0"
