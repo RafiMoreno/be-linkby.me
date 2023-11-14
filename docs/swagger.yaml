@@ -12,15 +12,25 @@ paths:
       summary: Login
       tags:
       - auth
-  /profile/:id:
+  /profile/:username:
     get:
-      description: Get a user profile
+      description: Get a user profile based on username
       produces:
       - application/json
       responses:
         "200":
           description: OK
       summary: Get Profile
+      tags:
+      - profile
+    put:
+      description: Edit a user profile based on username
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Edit Profile
       tags:
       - profile
   /sign-up:
