@@ -48,6 +48,15 @@ func EditProfile(c *gin.Context) {
 	c.Bind(&body)
 
 	username := c.Param("username")
+	currUser, _ := c.Get("user")
+	currUsername := currUser.(models.User).Username
+
+	if username != currUsername {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+
+	 	return
+	}
+
 	var user models.User
 	
 	 initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
