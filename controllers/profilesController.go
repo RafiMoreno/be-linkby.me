@@ -19,7 +19,7 @@ func GetProfile(c *gin.Context) {
 	username := c.Param("username")
 	var user models.User
 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
-	//
+	
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 
@@ -59,7 +59,8 @@ func EditProfile(c *gin.Context) {
 	 }
 
 	initializers.DB.Model(&user.Profile).Updates(
-		models.Profile{DisplayName : body.DisplayName,
+		models.Profile{
+			DisplayName : body.DisplayName,
 			PrimaryColor : body.PrimaryColor,
 			SecondaryColor : body.SecondaryColor,
 			Description : body.Description,

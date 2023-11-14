@@ -4,9 +4,9 @@ import "gorm.io/gorm"
 
 type Profile struct{
 	gorm.Model
-	DisplayName string	`json:"display_name"`
-	PrimaryColor string `json:"primary_color" gorm:"default:#A44646"`
-	SecondaryColor string `json:"secondary_color" gorm:"default:#FFFFFF"`
+	DisplayName string	`json:"displayName"`
+	PrimaryColor string `json:"primaryColor" gorm:"default:#A44646"`
+	SecondaryColor string `json:"secondaryColor" gorm:"default:#FFFFFF"`
 	Description string `json:"description"`
-	DisplayPicture string `json:"display_picture"`
+	DisplayPicture string `json:"displayPicture"`
 }
