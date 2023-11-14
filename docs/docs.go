@@ -32,9 +32,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/profile/:id": {
+        "/profile/:username": {
             "get": {
-                "description": "Get a user profile",
+                "description": "Get a user profile based on username",
                 "produces": [
                     "application/json"
                 ],
@@ -42,6 +42,21 @@ const docTemplate = `{
                     "profile"
                 ],
                 "summary": "Get Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
+            "put": {
+                "description": "Edit a user profile based on username",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "profile"
+                ],
+                "summary": "Edit Profile",
                 "responses": {
                     "200": {
                         "description": "OK"

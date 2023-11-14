@@ -16,7 +16,7 @@ import (
 func RequireAuth(c *gin.Context){
 	tokenString, err := c.Cookie("Auth")
 	if err != nil {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
