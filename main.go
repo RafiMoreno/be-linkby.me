@@ -8,6 +8,7 @@ import (
 	docs "github.com/RafiMoreno/be-linkby.me/docs"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -30,5 +31,6 @@ func main() {
 	v1.PUT("/profile/:username", middleware.RequireAuth, controllers.EditProfile)
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	r.Use(cors.Default())
 	r.Run()
 }
