@@ -7,8 +7,8 @@ import (
 
 	docs "github.com/RafiMoreno/be-linkby.me/docs"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -21,16 +21,17 @@ func init() {
 
 func main() {
 	r := gin.Default()
+	r.Use(cors.Default())
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	v1 := r.Group("/api/v1")
 	{
-	v1.POST("/sign-up", controllers.SignUp)
-	v1.POST("/login", controllers.Login)
-	v1.GET("/validate", middleware.RequireAuth, controllers.Validate)
-	v1.GET("/profile/:username", controllers.GetProfile)
-	v1.PUT("/profile/:username", middleware.RequireAuth, controllers.EditProfile)
+		v1.POST("/sign-up", controllers.SignUp)
+		v1.POST("/login", controllers.Login)
+		v1.GET("/validate", middleware.RequireAuth, controllers.Validate)
+		v1.GET("/profile/:username", controllers.GetProfile)
+		v1.PUT("/profile/:username", middleware.RequireAuth, controllers.EditProfile)
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-	r.Use(cors.Default())
+
 	r.Run()
 }
