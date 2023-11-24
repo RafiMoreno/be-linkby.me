@@ -233,3 +233,49 @@ func DeleteLink(c *gin.Context) {
 	})
 
 }
+
+// Increment Click Count           godoc
+// @Summary      Increment Click Counter
+// @Description  Increment click count of a link item for a profile owned by a user
+// @Tags         link
+// @Produce      json
+// @Success      200
+// @Router       /profile/:username/link/:linkID/increment-count [delete]
+func IncrementCounter(c *gin.Context) {
+	var body struct{}
+
+	c.Bind(&body)
+
+	username := c.Param("username")
+	linkID := c.Param("linkID")
+
+	var user models.User
+
+	initializers.DB.Where("username = ?", username).First(&user)
+
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return
+	}
+
+	var oldLink models.Link
+
+	initializers.DB.Where("Profile_ID = ?", user.ID).Where("ID = ?", linkID).First(&oldLink)
+
+	if oldLink.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Link not found"})
+		return
+	}
+
+	link := models.Link{
+		ClickCount: oldLink.ClickCount + 1,
+	}
+
+	initializers.DB.Model(&oldLink).Updates(&link)
+
+	var newLink models.Link
+	initializers.DB.Where("Profile_ID = ?", user.ID).Where("ID = ?", linkID).First(&newLink)
+
+	c.JSON(200, newLink)
+
+}
