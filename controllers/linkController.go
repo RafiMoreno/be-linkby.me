@@ -14,7 +14,7 @@ import (
 // @Tags         link
 // @Produce      json
 // @Success      200
-// @Router       /profile/:username/link-create [get]
+// @Router       /profile/:username/link [post]
 func CreateLink(c *gin.Context) {
 	var body struct {
 		Url     string
@@ -71,6 +71,13 @@ func CreateLink(c *gin.Context) {
 
 }
 
+// Create Link             godoc
+// @Summary      Get Link
+// @Description  Get link items for a profile owned by a user
+// @Tags         link
+// @Produce      json
+// @Success      200
+// @Router       /profile/:username/link [get]
 func GetLink(c *gin.Context) {
 	var body struct {
 		Url     string
@@ -110,52 +117,119 @@ func GetLink(c *gin.Context) {
 
 }
 
-// Edit Profile             godoc
-// @Summary      Edit Profile
-// @Description  Edit a user profile based on username
-// @Tags         profile
+// Update Link             godoc
+// @Summary      Update Link
+// @Description  Update a link item for a profile owned by a user
+// @Tags         link
 // @Produce      json
 // @Success      200
-// @Router       /profile/:username [put]
-// func EditLink(c *gin.Context) {
-// 	var body struct {
-// 		DisplayName    string
-// 		PrimaryColor   string
-// 		SecondaryColor string
-// 		Description    string
-// 		DisplayPicture string
-// 	}
+// @Router       /profile/:username/link/:linkID [put]
+func UpdateLink(c *gin.Context) {
+	var body struct {
+		Url     string
+		Title   string
+		IconUrl string
+	}
 
-// 	c.Bind(&body)
+	c.Bind(&body)
 
-// 	username := c.Param("username")
-// 	currUser, _ := c.Get("user")
-// 	currUsername := currUser.(models.User).Username
+	username := c.Param("username")
+	linkID := c.Param("linkID")
 
-// 	if username != currUsername {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+	currUser, _ := c.Get("user")
+	currUsername := currUser.(models.User).Username
 
-// 		return
-// 	}
+	if username != currUsername {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
 
-// 	var user models.User
+		return
+	}
 
-// 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
+	var user models.User
 
-// 	if user.ID == 0 {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+	initializers.DB.Where("username = ?", username).First(&user)
 
-// 		return
-// 	}
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return
+	}
 
-// 	initializers.DB.Model(&user.Profile).Updates(
-// 		models.Profile{
-// 			DisplayName:    body.DisplayName,
-// 			PrimaryColor:   body.PrimaryColor,
-// 			SecondaryColor: body.SecondaryColor,
-// 			Description:    body.Description,
-// 			DisplayPicture: body.DisplayPicture},
-// 	)
+	var oldLink models.Link
 
-// 	c.JSON(200, gin.H{"profile": user.Profile})
-// }
+	initializers.DB.Where("Profile_ID = ?", user.ID).Where("ID = ?", linkID).First(&oldLink)
+
+	if oldLink.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Link not found"})
+		return
+	}
+
+	link := models.Link{
+		Url:     body.Url,
+		Title:   body.Title,
+		IconUrl: body.IconUrl,
+	}
+
+	initializers.DB.Model(&oldLink).Updates(&link)
+
+	var profile models.Profile
+
+	initializers.DB.Where("ID = ?", user.ID).Preload("Links").First(&profile)
+
+	c.JSON(200, gin.H{
+		"username":  user.Username,
+		"profileID": profile.ID,
+		"links":     profile.Links,
+	})
+
+}
+
+// Delete Link             godoc
+// @Summary      Delete Link
+// @Description  Delete a link item for a profile owned by a user
+// @Tags         link
+// @Produce      json
+// @Success      200
+// @Router       /profile/:username/link/:linkID [delete]
+func DeleteLink(c *gin.Context) {
+	var body struct {
+		Url     string
+		Title   string
+		IconUrl string
+	}
+
+	c.Bind(&body)
+
+	username := c.Param("username")
+	linkID := c.Param("linkID")
+
+	currUser, _ := c.Get("user")
+	currUsername := currUser.(models.User).Username
+
+	if username != currUsername {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+
+		return
+	}
+
+	var user models.User
+
+	initializers.DB.Where("username = ?", username).First(&user)
+
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return
+	}
+
+	initializers.DB.Where("Profile_ID = ?", user.ID).Delete(&models.Link{}, linkID)
+
+	var profile models.Profile
+
+	initializers.DB.Where("ID = ?", user.ID).Preload("Links").First(&profile)
+
+	c.JSON(200, gin.H{
+		"username":  user.Username,
+		"profileID": profile.ID,
+		"links":     profile.Links,
+	})
+
+}
