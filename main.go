@@ -34,6 +34,8 @@ func main() {
 		v1.GET("/validate", middleware.RequireAuth, controllers.Validate)
 		v1.GET("/profile/:username", controllers.GetProfile)
 		v1.PUT("/profile/:username", middleware.RequireAuth, controllers.EditProfile)
+		v1.POST("/profile/:username/link", middleware.RequireAuth, controllers.CreateLink)
+		v1.GET("/profile/:username/link", controllers.GetLink)
 	}
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

@@ -9,5 +9,5 @@ type Profile struct {
 	SecondaryColor string `json:"secondaryColor" gorm:"default:#FFFFFF"`
 	Description    string `json:"description"`
 	DisplayPicture string `json:"displayPicture"`
-	Links          []Link `json:"link"`
+	Links          []Link `json:"-" gorm:"foreignKey:ProfileID"`
 }
