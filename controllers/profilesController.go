@@ -19,14 +19,14 @@ func GetProfile(c *gin.Context) {
 	username := c.Param("username")
 	var user models.User
 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
-	
+
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 
 		return
 	}
 
-	c.JSON(200, gin.H{ "profile" : user.Profile })
+	c.JSON(200, gin.H{"profile": user.Profile})
 }
 
 // Edit Profile             godoc
@@ -37,11 +37,11 @@ func GetProfile(c *gin.Context) {
 // @Success      200
 // @Router       /profile/:username [put]
 func EditProfile(c *gin.Context) {
-	var body struct{
-		DisplayName string
-		PrimaryColor string
+	var body struct {
+		DisplayName    string
+		PrimaryColor   string
 		SecondaryColor string
-		Description string
+		Description    string
 		DisplayPicture string
 	}
 
@@ -54,27 +54,27 @@ func EditProfile(c *gin.Context) {
 	if username != currUsername {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
 
-	 	return
+		return
 	}
 
 	var user models.User
-	
-	 initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
 
-	 if user.ID == 0 {
-	 	c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
 
-	 	return
-	 }
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+
+		return
+	}
 
 	initializers.DB.Model(&user.Profile).Updates(
 		models.Profile{
-			DisplayName : body.DisplayName,
-			PrimaryColor : body.PrimaryColor,
-			SecondaryColor : body.SecondaryColor,
-			Description : body.Description,
-			DisplayPicture : body.DisplayPicture,},
+			DisplayName:    body.DisplayName,
+			PrimaryColor:   body.PrimaryColor,
+			SecondaryColor: body.SecondaryColor,
+			Description:    body.Description,
+			DisplayPicture: body.DisplayPicture},
 	)
 
- 	c.JSON(200, gin.H{ "profile" : user.Profile })
- }
+	c.JSON(200, gin.H{"profile": user.Profile})
+}
