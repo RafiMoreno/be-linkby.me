@@ -22,8 +22,9 @@ func init() {
 func main() {
 	r := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AllowHeaders = append(config.AllowHeaders, "Access-Control-Allow-Headers", "Authorization")
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	config.AllowCredentials = true
+	config.AllowHeaders = append(config.AllowHeaders, "Access-Control-Allow-Headers", "Authorization", "Cookies")
 	r.Use(cors.New(config))
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
