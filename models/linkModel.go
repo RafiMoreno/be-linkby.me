@@ -8,5 +8,5 @@ type Link struct {
 	Title      string `json:"title"`
 	ClickCount uint64 `json:"clickCount" gorm:"default:0"`
 	IconUrl    string `json:"iconUrl"`
-	ProfileID  uint   `json:"-" gorm:"foreignKey:ID"`
+	ProfileID  uint   `json:"profileID"`
 }

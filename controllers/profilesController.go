@@ -21,7 +21,7 @@ func GetProfile(c *gin.Context) {
 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 
 		return
 	}
@@ -52,7 +52,7 @@ func EditProfile(c *gin.Context) {
 	currUsername := currUser.(models.User).Username
 
 	if username != currUsername {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized User"})
 
 		return
 	}
@@ -62,12 +62,12 @@ func EditProfile(c *gin.Context) {
 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 
 		return
 	}
 
-	initializers.DB.Model(&user.Profile).Updates(
+	result := initializers.DB.Model(&user.Profile).Updates(
 		models.Profile{
 			DisplayName:    body.DisplayName,
 			PrimaryColor:   body.PrimaryColor,
@@ -75,6 +75,12 @@ func EditProfile(c *gin.Context) {
 			Description:    body.Description,
 			DisplayPicture: body.DisplayPicture},
 	)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile"})
+
+		return
+	}
 
 	c.JSON(200, gin.H{"profile": user.Profile})
 }

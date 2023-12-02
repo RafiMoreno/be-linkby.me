@@ -14,11 +14,11 @@ import (
 )
 
 // SignUp             godoc
-// @Summary      Sign Up 
+// @Summary      Sign Up
 // @Description  Create user using username and password
 // @Tags         auth
 // @Produce      json
-// @Success      200  
+// @Success      200
 // @Router       /sign-up [post]
 func SignUp(c *gin.Context) {
 	var body struct {
@@ -35,7 +35,17 @@ func SignUp(c *gin.Context) {
 	hashed_pw, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to hash password"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+
+		return
+	}
+
+	var existingUser models.User
+
+	initializers.DB.First(&existingUser, "username= ?", body.Username)
+
+	if existingUser.ID != 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username " + body.Username + " already exists"})
 
 		return
 	}
@@ -43,21 +53,21 @@ func SignUp(c *gin.Context) {
 	user := models.User{
 		Username: body.Username,
 		Password: string(hashed_pw),
-		Profile: models.Profile{DisplayName: body.Username},
+		Profile:  models.Profile{DisplayName: body.Username},
 	}
 	result := initializers.DB.Create(&user)
 
 	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message" : "Successfully created user"})
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully created user"})
 }
 
 // Login             godoc
-// @Summary      Login 
+// @Summary      Login
 // @Description  Generate JWT for authentication
 // @Tags         auth
 // @Produce      json
@@ -78,14 +88,14 @@ func Login(c *gin.Context) {
 	initializers.DB.First(&user, "username= ?", body.Username)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username or password"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 
 		return
 	}
 
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid username or password"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 
 		return
 	}
@@ -93,32 +103,32 @@ func Login(c *gin.Context) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
-
 	})
-	
+
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to generate token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 
 		return
 	}
-	
+
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("Auth", tokenString, 3600 * 24 * 30, "", "", false, true)
+	c.SetCookie("Auth", tokenString, 3600*24*30, "", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
 // Validate             godoc
-// @Summary      Validate 
+// @Summary      Validate
 // @Description  Validate authentication
 // @Tags         auth
 // @Produce      json
 // @Success      200
 // @Router       /validate [get]
-func Validate(c *gin.Context){
+func Validate(c *gin.Context) {
 	user, _ := c.Get("user")
 	username := user.(models.User).Username
-	c.JSON(http.StatusOK, gin.H{"message": "User is logged in", "username" : username})
+
+	c.JSON(http.StatusOK, gin.H{"message": "User is logged in", "username": username})
 }
