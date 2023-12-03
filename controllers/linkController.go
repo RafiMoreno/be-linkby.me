@@ -113,17 +113,11 @@ func GetLink(c *gin.Context) {
 		return
 	}
 
-	var links []models.Link
-	// initializers.DB.Model(&profile).Where("ID = ?", user.ID).Association("Links").Find(&links)
-
-	// c.JSON(200, gin.H{
-	// 	"username":  user.Username,
-	// 	"profileID": profile.ID,
-	// 	"links":     links,
-	// })
-
-	initializers.DB.Model(&links).Find(&links)
-	c.JSON(200, links)
+	c.JSON(200, gin.H{
+		"username":  user.Username,
+		"profileID": profile.ID,
+		"links":     profile.Links,
+	})
 }
 
 // Update Link             godoc
