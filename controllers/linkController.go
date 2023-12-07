@@ -29,7 +29,7 @@ func CreateLink(c *gin.Context) {
 	currUsername := currUser.(models.User).Username
 
 	if username != currUsername {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized User"})
 
 		return
 	}
@@ -39,7 +39,7 @@ func CreateLink(c *gin.Context) {
 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
@@ -48,7 +48,7 @@ func CreateLink(c *gin.Context) {
 	initializers.DB.Where("ID = ?", user.ID).Preload("Links").First(&profile)
 
 	if profile.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User profile not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User profile not found"})
 		return
 	}
 
@@ -59,7 +59,13 @@ func CreateLink(c *gin.Context) {
 		ProfileID: profile.ID,
 	}
 
-	initializers.DB.Create(&link)
+	result := initializers.DB.Create(&link)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create link"})
+
+		return
+	}
 
 	initializers.DB.Where("ID = ?", user.ID).Preload("Links").First(&profile)
 
@@ -94,7 +100,7 @@ func GetLink(c *gin.Context) {
 	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
@@ -103,18 +109,21 @@ func GetLink(c *gin.Context) {
 	initializers.DB.Where("ID = ?", user.ID).Preload("Links").First(&profile)
 
 	if profile.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User profile not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User profile not found"})
 		return
 	}
 
-	initializers.DB.Where("ID = ?", user.ID).Preload("Links").First(&profile)
+	var links []models.Link
+	// initializers.DB.Model(&profile).Where("ID = ?", user.ID).Association("Links").Find(&links)
 
-	c.JSON(200, gin.H{
-		"username":  user.Username,
-		"profileID": profile.ID,
-		"links":     profile.Links,
-	})
+	// c.JSON(200, gin.H{
+	// 	"username":  user.Username,
+	// 	"profileID": profile.ID,
+	// 	"links":     links,
+	// })
 
+	initializers.DB.Model(&links).Find(&links)
+	c.JSON(200, links)
 }
 
 // Update Link             godoc
@@ -140,7 +149,7 @@ func UpdateLink(c *gin.Context) {
 	currUsername := currUser.(models.User).Username
 
 	if username != currUsername {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized User"})
 
 		return
 	}
@@ -150,7 +159,7 @@ func UpdateLink(c *gin.Context) {
 	initializers.DB.Where("username = ?", username).First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
@@ -159,7 +168,7 @@ func UpdateLink(c *gin.Context) {
 	initializers.DB.Where("Profile_ID = ?", user.ID).Where("ID = ?", linkID).First(&oldLink)
 
 	if oldLink.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Link not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Link not found"})
 		return
 	}
 
@@ -169,7 +178,13 @@ func UpdateLink(c *gin.Context) {
 		IconUrl: body.IconUrl,
 	}
 
-	initializers.DB.Model(&oldLink).Updates(&link)
+	result := initializers.DB.Model(&oldLink).Updates(&link)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update link"})
+
+		return
+	}
 
 	var profile models.Profile
 
@@ -206,7 +221,7 @@ func DeleteLink(c *gin.Context) {
 	currUsername := currUser.(models.User).Username
 
 	if username != currUsername {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unauthorized User"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized User"})
 
 		return
 	}
@@ -216,11 +231,17 @@ func DeleteLink(c *gin.Context) {
 	initializers.DB.Where("username = ?", username).First(&user)
 
 	if user.ID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
-	initializers.DB.Where("Profile_ID = ?", user.ID).Delete(&models.Link{}, linkID)
+	result := initializers.DB.Where("Profile_ID = ?", user.ID).Delete(&models.Link{}, linkID)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete link"})
+
+		return
+	}
 
 	var profile models.Profile
 
