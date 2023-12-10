@@ -17,9 +17,10 @@ import (
 // @Router       /profile/:username/link [post]
 func CreateLink(c *gin.Context) {
 	var body struct {
-		Url     string
-		Title   string
-		IconUrl string
+		Url       string
+		Title     string
+		IconUrl   string
+		IconColor string
 	}
 
 	c.Bind(&body)
@@ -56,6 +57,7 @@ func CreateLink(c *gin.Context) {
 		Url:       body.Url,
 		Title:     body.Title,
 		IconUrl:   body.IconUrl,
+		IconColor: body.IconColor,
 		ProfileID: profile.ID,
 	}
 
@@ -85,14 +87,6 @@ func CreateLink(c *gin.Context) {
 // @Success      200
 // @Router       /profile/:username/link [get]
 func GetLink(c *gin.Context) {
-	var body struct {
-		Url     string
-		Title   string
-		IconUrl string
-	}
-
-	c.Bind(&body)
-
 	username := c.Param("username")
 
 	var user models.User
@@ -129,9 +123,10 @@ func GetLink(c *gin.Context) {
 // @Router       /profile/:username/link/:linkID [put]
 func UpdateLink(c *gin.Context) {
 	var body struct {
-		Url     string
-		Title   string
-		IconUrl string
+		Url       string
+		Title     string
+		IconUrl   string
+		IconColor string
 	}
 
 	c.Bind(&body)
@@ -167,9 +162,10 @@ func UpdateLink(c *gin.Context) {
 	}
 
 	link := models.Link{
-		Url:     body.Url,
-		Title:   body.Title,
-		IconUrl: body.IconUrl,
+		Url:       body.Url,
+		Title:     body.Title,
+		IconUrl:   body.IconUrl,
+		IconColor: body.IconColor,
 	}
 
 	result := initializers.DB.Model(&oldLink).Updates(&link)
@@ -200,14 +196,6 @@ func UpdateLink(c *gin.Context) {
 // @Success      200
 // @Router       /profile/:username/link/:linkID [delete]
 func DeleteLink(c *gin.Context) {
-	var body struct {
-		Url     string
-		Title   string
-		IconUrl string
-	}
-
-	c.Bind(&body)
-
 	username := c.Param("username")
 	linkID := c.Param("linkID")
 
