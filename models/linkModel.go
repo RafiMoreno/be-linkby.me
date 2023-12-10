@@ -9,4 +9,5 @@ type Link struct {
 	ClickCount uint64 `json:"clickCount" gorm:"default:0"`
 	IconUrl    string `json:"iconUrl"`
 	ProfileID  uint   `json:"profileID"`
+	IconColor  string `json:"iconColor"`
 }
