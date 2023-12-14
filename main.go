@@ -35,6 +35,7 @@ func main() {
 		v1.GET("/validate", middleware.RequireAuth, controllers.Validate)
 		v1.GET("/profile/:username", controllers.GetProfile)
 		v1.PUT("/profile/:username", middleware.RequireAuth, controllers.EditProfile)
+		v1.PUT("/profile/:username/upload-image", middleware.RequireAuth, controllers.UploadImage)
 		v1.POST("/profile/:username/link", middleware.RequireAuth, controllers.CreateLink)
 		v1.GET("/profile/:username/link", controllers.GetLink)
 		v1.PUT("/profile/:username/link/:linkID", middleware.RequireAuth, controllers.UpdateLink)

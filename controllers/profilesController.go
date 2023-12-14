@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
+	"os"
 
 	"github.com/RafiMoreno/be-linkby.me/initializers"
 	"github.com/RafiMoreno/be-linkby.me/models"
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 )
 
@@ -83,4 +87,55 @@ func EditProfile(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"profile": user.Profile})
+}
+
+func UploadImage(c * gin.Context){
+	username := c.Param("username")
+	currUser, _ := c.Get("user")
+	currUsername := currUser.(models.User).Username
+
+	if username != currUsername {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized User"})
+
+		return
+	}
+
+	fileHeader, _ := c.FormFile("image")
+	file, _ := fileHeader.Open()
+
+	ctx := context.Background()
+
+	cld, err := cloudinary.NewFromURL(os.Getenv("CLOUDINARY_URL"))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Image Storage Error"})
+
+		return
+	}
+
+	resp, _ := cld.Upload.Upload(ctx, file, uploader.UploadParams{})
+
+	var user models.User
+
+	initializers.DB.Where("username = ?", username).Preload("Profile").First(&user)
+
+	if user.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+
+		return
+	}
+
+	result := initializers.DB.Model(&user.Profile).Updates(
+		models.Profile{
+			DisplayPicture: resp.SecureURL,
+		},
+	)
+
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update image"})
+
+		return
+	}
+
+	c.JSON(200, gin.H{"displayPicture": user.Profile.DisplayPicture})
 }
