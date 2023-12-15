@@ -1,6 +1,6 @@
 module github.com/RafiMoreno/be-linkby.me
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/cloudinary/cloudinary-go/v2 v2.6.2
