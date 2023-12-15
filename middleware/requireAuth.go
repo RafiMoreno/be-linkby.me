@@ -14,11 +14,7 @@ import (
 )
 
 func RequireAuth(c *gin.Context){
-	cekCookie := c.Request.Header["Cookies"]
-	fmt.Println(cekCookie)
 	tokenString, err := c.Cookie("token")
-	fmt.Println(tokenString)
-	fmt.Println(err)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return

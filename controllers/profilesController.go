@@ -46,7 +46,6 @@ func EditProfile(c *gin.Context) {
 		PrimaryColor   string
 		SecondaryColor string
 		Description    string
-		DisplayPicture string
 	}
 
 	c.Bind(&body)
@@ -77,7 +76,7 @@ func EditProfile(c *gin.Context) {
 			PrimaryColor:   body.PrimaryColor,
 			SecondaryColor: body.SecondaryColor,
 			Description:    body.Description,
-			DisplayPicture: body.DisplayPicture},
+		},
 	)
 
 	if result.Error != nil {
