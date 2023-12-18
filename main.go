@@ -24,7 +24,7 @@ func main() {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000", "https://linkby-me.vercel.app"}
 	config.AllowCredentials = true
-	config.AllowHeaders = append(config.AllowHeaders, "Access-Control-Allow-Headers", "Authorization", "Cookies")
+	config.AllowHeaders = append(config.AllowHeaders, "Access-Control-Allow-Headers", "Authorization", "Cookies", "Set-Cookies")
 	r.Use(cors.New(config))
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
