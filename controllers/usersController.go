@@ -113,7 +113,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("token", tokenString, 3600 * 24 * 30, "", "", false, true)
+	c.SetCookie("token", tokenString, 3600*24*30, os.Getenv("FE_DOMAIN"), "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
