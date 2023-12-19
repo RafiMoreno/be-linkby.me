@@ -22,7 +22,7 @@ func init() {
 func main() {
 	r := gin.Default()
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000", "https://linkby-me.vercel.app"}
+	config.AllowOrigins = []string{"http://localhost:3000", "https://linkby-me.vercel.app", "https://linkbyme.up.railway.app"}
 	config.AllowCredentials = true
 	config.AllowHeaders = append(config.AllowHeaders, "Access-Control-Allow-Headers", "Authorization", "Cookies", "Set-Cookies")
 	r.Use(cors.New(config))
