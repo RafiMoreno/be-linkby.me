@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/RafiMoreno/be-linkby.me/initializers"
@@ -112,8 +113,29 @@ func Login(c *gin.Context) {
 
 		return
 	}
-	c.SetSameSite(http.SameSiteLaxMode)
-	c.SetCookie("token", tokenString, 3600*24*30, os.Getenv("FE_DOMAIN"), "", false, true)
+	isSecure, err := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+
+	if err != nil {
+		isSecure = true
+	}
+
+	isHttp, err := strconv.ParseBool(os.Getenv("COOKIE_HTTP_ONLY"))
+
+	if err != nil {
+		isHttp = true
+	}
+
+	if os.Getenv("COOKIE_SAME_SITE") == "strict" {
+		c.SetSameSite(http.SameSiteStrictMode)
+	} else if os.Getenv("COOKIE_SAME_SITE") == "lax" {
+		c.SetSameSite(http.SameSiteLaxMode)
+	} else if os.Getenv("COOKIE_SAME_SITE") == "none" {
+		c.SetSameSite(http.SameSiteNoneMode)
+	} else {
+		c.SetSameSite(http.SameSiteDefaultMode)
+	}
+
+	c.SetCookie("token", tokenString, 3600*24*30, "/", os.Getenv("FE_DOMAIN"), isSecure, isHttp)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
