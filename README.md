@@ -1,2 +1,2 @@
 # be-linkby.me
-Backend for [Linkbyme](https://linkbyme.up.railway.app/)
+Backend for [Linkbyme](https://linkbyme.up.railway.app/).
